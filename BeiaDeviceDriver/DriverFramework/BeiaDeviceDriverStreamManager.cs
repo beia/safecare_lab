@@ -5,7 +5,7 @@ using VideoOS.Platform.DriverFramework.Exceptions;
 using VideoOS.Platform.DriverFramework.Managers;
 using VideoOS.Platform.DriverFramework.Utilities;
 
-namespace BeiaDeviceDriver
+namespace Safecare.BeiaDeviceDriver
 {
     /// <summary>
     /// Class for overall stream handling.

@@ -1,6 +1,6 @@
 using VideoOS.Platform.DriverFramework;
 
-namespace BeiaDeviceDriver
+namespace Safecare.BeiaDeviceDriver
 {
     /// <summary>
     /// Container holding all the different managers.

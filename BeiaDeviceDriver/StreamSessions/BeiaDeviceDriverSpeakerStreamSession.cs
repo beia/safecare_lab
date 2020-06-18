@@ -2,7 +2,7 @@ using System;
 using VideoOS.Platform.DriverFramework.Data;
 using VideoOS.Platform.DriverFramework.Managers;
 
-namespace BeiaDeviceDriver
+namespace Safecare.BeiaDeviceDriver
 {
     /// <summary>
     /// Class for working with one speaker audio stream session

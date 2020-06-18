@@ -5,7 +5,7 @@ using VideoOS.Platform.DriverFramework;
 using VideoOS.Platform.DriverFramework.Data.Settings;
 using VideoOS.Platform.DriverFramework.Definitions;
 
-namespace BeiaDeviceDriver
+namespace Safecare.BeiaDeviceDriver
 {
     /// <summary>
     /// The main entry point for the device driver.

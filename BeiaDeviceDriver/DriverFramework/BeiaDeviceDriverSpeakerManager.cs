@@ -3,7 +3,7 @@ using VideoOS.Platform.DriverFramework.Data;
 using VideoOS.Platform.DriverFramework.Managers;
 using VideoOS.Platform.DriverFramework.Utilities;
 
-namespace BeiaDeviceDriver
+namespace Safecare.BeiaDeviceDriver
 {
     /// <summary>
     /// Class for sending audio to a speaker

@@ -1,8 +1,9 @@
 using System;
+using System.Text;
 using VideoOS.Platform.DriverFramework.Data;
 using VideoOS.Platform.DriverFramework.Managers;
 
-namespace BeiaDeviceDriver
+namespace Safecare.BeiaDeviceDriver
 {
     /// <summary>
     /// Class for working with one metadata stream session
@@ -22,14 +23,17 @@ namespace BeiaDeviceDriver
             data = null;
             header = null;
 
-            // TODO: Implement request for fetching data from device
+            string msg = _connectionManager?.CurrentMessage;
+            if (string.IsNullOrEmpty(msg))
+                return false;
 
-            if (data.Length == 0)
+            data = Encoding.UTF8.GetBytes(msg);
+            if (data == null || data.Length == 0)
             {
                 return false;
             }
-            DateTime dt = DateTime.UtcNow;// TODO: If a timestamp is provided by device, use that instead
-            header = new MetadataHeader()
+            DateTime dt = DateTime.UtcNow;
+            header = new MetadataHeader
             {
                 Length = (ulong)data.Length,
                 SequenceNumber = _sequence++,

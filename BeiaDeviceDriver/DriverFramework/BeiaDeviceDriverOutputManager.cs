@@ -5,7 +5,7 @@ using VideoOS.Platform.DriverFramework.Definitions;
 using VideoOS.Platform.DriverFramework.Exceptions;
 using VideoOS.Platform.DriverFramework.Managers;
 
-namespace BeiaDeviceDriver
+namespace Safecare.BeiaDeviceDriver
 {
     /// <summary>
     /// Class for triggering outputs.

@@ -5,7 +5,7 @@ using VideoOS.Platform.DriverFramework.Exceptions;
 using VideoOS.Platform.DriverFramework.Utilities;
 using VideoOS.Platform.DriverFramework.Managers;
 
-namespace BeiaDeviceDriver
+namespace Safecare.BeiaDeviceDriver
 {
     /// <summary>
     /// Base stream session class. Specialized in other classes for specific devices.

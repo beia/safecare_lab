@@ -5,7 +5,7 @@ using VideoOS.Platform.DriverFramework.Managers;
 using VideoOS.Platform.DriverFramework.Utilities;
 
 
-namespace BeiaDeviceDriver
+namespace Safecare.BeiaDeviceDriver
 {
     /// <summary>
     /// This class should implement support for requesting stored data from the device.

@@ -2,53 +2,93 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Security;
+using System.Text;
+using uPLibrary.Networking.M2Mqtt;
+using uPLibrary.Networking.M2Mqtt.Messages;
 using VideoOS.Platform.DriverFramework.Data.Settings;
-using VideoOS.Platform.DriverFramework.Exceptions;
 using VideoOS.Platform.DriverFramework.Managers;
-using VideoOS.Platform.DriverFramework.Utilities;
 
 
-namespace BeiaDeviceDriver
+namespace Safecare.BeiaDeviceDriver
 {
     /// <summary>
     /// Class handling connection to one hardware
-    /// TODO: Add methods for making the needed requests to your hardware type, and use these from the other classes
     /// </summary>
     public class BeiaDeviceDriverConnectionManager : ConnectionManager
     {
         private InputPoller _inputPoller;
 
         private Uri _uri;
-        private string _userName;
-        private SecureString _password;
         private bool _connected = false;
+        private MqttClient _client;
+        private readonly DeviceMessageBuffer _messageBuffer = new DeviceMessageBuffer();
+
+        public string CurrentMessage => _messageBuffer.Message;
+
+        public string FakeMacAddress { get; private set; }
 
         public BeiaDeviceDriverConnectionManager(BeiaDeviceDriverContainer container) : base(container)
         {
         }
 
+        static String SecureStringToString(SecureString value)
+        {
+            IntPtr valuePtr = IntPtr.Zero;
+            try
+            {
+                valuePtr = Marshal.SecureStringToGlobalAllocUnicode(value);
+                return Marshal.PtrToStringUni(valuePtr);
+            }
+            finally
+            {
+                Marshal.ZeroFreeGlobalAllocUnicode(valuePtr);
+            }
+        }
+
         /// <summary>
         /// Implementation of the DFW platform method.
         /// </summary>
-        /// <param name="uri"></param>
-        /// <param name="userName"></param>
-        /// <param name="password"></param>
-        /// <param name="hardwareSettings"></param>
         public override void Connect(Uri uri, string userName, SecureString password, ICollection<HardwareSetting> hardwareSettings)
         {
+            LogUtils.LogDebug($"Connecting to {uri}. User: {userName}.");
+
             if (_connected)
             {
                 return;
             }
-            _uri = uri;
-            _userName = userName;
-            _password = password;
 
-            // TODO: Establish connection
+            _uri = uri;
+
+            FakeMacAddress = MakeFakeMacAddressFromUri(uri);
+
+            // Establish connection
+            _client = new MqttClient("mqtt.beia-telemetrie.ro");
+            byte connectCode = _client.Connect(string.Empty, userName, SecureStringToString(password));
+            if (connectCode == 0)
+                _connected = true;
+            else
+            {
+                _connected = false;
+                LogUtils.LogError("MQTT connection failed. Error: " + connectCode, "ConnectionManager/Connect");
+                return;
+            }
+
+            _client.MqttMsgPublishReceived -= MsgReceived;
+            _client.MqttMsgPublishReceived += MsgReceived;
+
+            _client.Subscribe(new[] {"odsi/mari-anais"}, new[] {MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE});
 
             // polling for events from the device. Might not be needed if the event mechanism of your hardware is not poll based
-            _inputPoller = new InputPoller(Container.EventManager, this);
+            _inputPoller = new InputPoller(Container.EventManager, this, _messageBuffer);
             _inputPoller.Start();
+        }
+
+        public void MsgReceived(object sender, MqttMsgPublishEventArgs e)
+        {
+            // Handle message received
+            var message = Encoding.Default.GetString(e.Message);
+            _messageBuffer.Update(message);
+            LogUtils.LogDebug("MQTT message received. Length  " + _messageBuffer.Message.Length);
         }
 
         /// <summary>
@@ -56,7 +96,9 @@ namespace BeiaDeviceDriver
         /// </summary>
         public override void Close()
         {
-            // TODO: Disconnect/close connection
+            _inputPoller?.Stop();
+            _client?.Disconnect();
+
             _connected = false;
         }
 
@@ -65,10 +107,43 @@ namespace BeiaDeviceDriver
         /// </summary>
         public override bool IsConnected
         {
-            get
+            get { return _connected && _inputPoller != null && _inputPoller.ReadyToRun; }
+        }
+
+        public byte[] PopFrame()
+        {
+            return _inputPoller.PopFrame();
+        }
+
+        private static string MakeFakeMacAddressFromUri(Uri uri)
+        {
+            const string defaultValue = "00";
+            string hostName = uri.IsLoopback ? "127.0.0.1" : uri.DnsSafeHost;
+
+            var ipSegments = hostName.Split('.');
+            var macAddress = new string[6];
+            for (int i = 0; i < 4; i++)
             {
-                return _connected;
+                if (i > ipSegments.Length - 1)
+                    macAddress[i] = defaultValue;
+
+                if (!int.TryParse(ipSegments[i], out int value))
+                    macAddress[i] = defaultValue; // Fallback value
+
+                macAddress[i] = (value % (byte.MaxValue + 1)).ToString("X2");
             }
+
+            var portHexString = (uri.Port % (ushort.MaxValue + 1)).ToString("X2");
+
+            macAddress[4] = portHexString.Substring(0, 2);
+
+            if (portHexString.Length > 2)
+                macAddress[5] = portHexString.Substring(2, 2);
+            else
+                macAddress[5] = defaultValue;
+
+            return string.Join("-", macAddress);
         }
     }
 }
+

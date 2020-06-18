@@ -4,10 +4,10 @@ using VideoOS.Platform.DriverFramework.Data.Ptz;
 using VideoOS.Platform.DriverFramework.Exceptions;
 using VideoOS.Platform.DriverFramework.Managers;
 
-namespace BeiaDeviceDriver
+namespace Safecare.BeiaDeviceDriver
 {
     /// <summary>
-    /// Class implementing PTZ support.  
+    /// Class implementing PTZ support.
     /// TODO: You should implement requests to your device, or if PTZ is not supported, remove the class entirely.
     /// </summary>
     public class BeiaDeviceDriverPtzManager : PtzManager

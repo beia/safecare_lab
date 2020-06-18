@@ -1,7 +1,7 @@
 using System;
 using VideoOS.Platform.DriverFramework.Definitions;
 
-namespace BeiaDeviceDriver
+namespace Safecare.BeiaDeviceDriver
 {
     public static class Constants
     {

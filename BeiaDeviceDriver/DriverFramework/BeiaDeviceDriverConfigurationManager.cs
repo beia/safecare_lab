@@ -1,11 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using VideoOS.Platform.DriverFramework.Definitions;
 using VideoOS.Platform.DriverFramework.Exceptions;
 using VideoOS.Platform.DriverFramework.Managers;
 
-namespace BeiaDeviceDriver
+namespace Safecare.BeiaDeviceDriver
 {
     /// <summary>
     /// This class returns information about the hardware including capabilities and settings supported.
@@ -33,7 +32,10 @@ namespace BeiaDeviceDriver
 
             var driverInfo = Container.Definition.DriverInfo;
             var product = driverInfo.SupportedProducts.FirstOrDefault();
-            var macAddress = "DE:AD:C0:DE:56:78"; // TODO: Make request to hardware
+            //var macAddress = "DE:AD:C0:DE:56:78"; // TODO: Make request to hardware
+            var macAddress = Container.ConnectionManager.FakeMacAddress;
+            LogUtils.LogDebug("Mac address " + macAddress, "FetchProductInformation");
+
 
             return new ProductInformation
             {
