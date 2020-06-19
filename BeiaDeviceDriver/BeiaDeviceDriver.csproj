@@ -74,9 +74,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Config\Constants.cs" />
-    <Compile Include="CustomizedCommunication\BarometerData.cs" />
+    <Compile Include="CustomizedCommunication\ThermometerData.cs" />
     <Compile Include="CustomizedCommunication\BitmapUtils.cs" />
-    <Compile Include="DeviceCommunication\MessageBuffer.cs" />    
+    <Compile Include="DeviceCommunication\DeviceMessageHandler.cs" />
     <Compile Include="StreamSessions\BeiaDeviceDriverMicrophoneStreamSession.cs" />
     <Compile Include="StreamSessions\BeiaDeviceDriverSpeakerStreamSession.cs" />
     <Compile Include="StreamSessions\BeiaDeviceDriverMetadataStreamSession.cs" />

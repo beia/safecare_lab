@@ -14,7 +14,8 @@ namespace Safecare.BeiaDeviceDriver
         private Lazy<Thread> _listenerThread;
         private byte[] _lastFrame;
         private readonly object _frameLock = new object();
-        private readonly DeviceMessageBuffer _messageBuffer;
+        private readonly DeviceMessageHandler _messageHandler;
+        private DateTime _lastUpdateTime;
 
         public bool ReadyToRun => !_shuttingDown;
 
@@ -38,9 +39,9 @@ namespace Safecare.BeiaDeviceDriver
         }
 
         public InputPoller(IEventManager eventManager, BeiaDeviceDriverConnectionManager connectionManager,
-            DeviceMessageBuffer messageBuffer)
+            DeviceMessageHandler messageHandler)
         {
-            _messageBuffer = messageBuffer;
+            _messageHandler = messageHandler;
         }
 
         public void Start()
@@ -68,11 +69,11 @@ namespace Safecare.BeiaDeviceDriver
             {
                 try
                 {
-                    if (!string.IsNullOrEmpty(_messageBuffer.Message))
+                    if (_messageHandler.Initialized && _lastUpdateTime < _messageHandler.Data.Time)
                     {
-                        string msg = BarometerData.Deserialize(_messageBuffer.Message).Serialize();
-                        PushFrame(BitmapUtils.BitmapToJpegBytes(
-                            BitmapUtils.ConvertTextToImage(msg)));
+                        string msg = _messageHandler.Data.Serialize();
+                        PushFrame(BitmapUtils.BitmapToJpegBytes(BitmapUtils.ConvertTextToImage(msg)));
+                        _lastUpdateTime = _messageHandler.Data.Time;
                     }
 
                     Thread.Sleep(250);      // We check every 250 ms

@@ -1,9 +1,13 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 
 namespace Safecare.BeiaDeviceDriver
 {
-    public class BarometerData
+    public class ThermometerData
     {
+        [JsonProperty("Utc_date_time")]
+        public DateTime Time { get; set; }
+
         [JsonProperty("Light_level")]
         public double LightLevel { get; set; }
 
@@ -24,9 +28,15 @@ namespace Safecare.BeiaDeviceDriver
                 });
         }
 
-        public static BarometerData Deserialize(string text)
+        public static ThermometerData Deserialize(string text)
         {
-            return JsonConvert.DeserializeObject<BarometerData>(text);
+            return JsonConvert.DeserializeObject<ThermometerData>(text);
+        }
+
+        public void SetDateTimeIfEmpty()
+        {
+            if (Time == default)
+                Time = DateTime.UtcNow;
         }
     }
 }

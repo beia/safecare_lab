@@ -21,9 +21,9 @@ namespace Safecare.BeiaDeviceDriver
         private Uri _uri;
         private bool _connected = false;
         private MqttClient _client;
-        private readonly DeviceMessageBuffer _messageBuffer = new DeviceMessageBuffer();
+        private readonly DeviceMessageHandler _messageHandler = new DeviceMessageHandler();
 
-        public string CurrentMessage => _messageBuffer.Message;
+        public ThermometerData CurrentData => _messageHandler.Data;
 
         public string FakeMacAddress { get; private set; }
 
@@ -79,7 +79,7 @@ namespace Safecare.BeiaDeviceDriver
             _client.Subscribe(new[] {"odsi/mari-anais"}, new[] {MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE});
 
             // polling for events from the device. Might not be needed if the event mechanism of your hardware is not poll based
-            _inputPoller = new InputPoller(Container.EventManager, this, _messageBuffer);
+            _inputPoller = new InputPoller(Container.EventManager, this, _messageHandler);
             _inputPoller.Start();
         }
 
@@ -87,8 +87,8 @@ namespace Safecare.BeiaDeviceDriver
         {
             // Handle message received
             var message = Encoding.Default.GetString(e.Message);
-            _messageBuffer.Update(message);
-            LogUtils.LogDebug("MQTT message received. Length  " + _messageBuffer.Message.Length);
+            _messageHandler.Update(message);
+            LogUtils.LogDebug("MQTT message received. Length  " + message.Length);
         }
 
         /// <summary>

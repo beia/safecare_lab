@@ -23,21 +23,20 @@ namespace Safecare.BeiaDeviceDriver
             data = null;
             header = null;
 
-            string msg = _connectionManager?.CurrentMessage;
-            if (string.IsNullOrEmpty(msg))
+            var measuredData = _connectionManager?.CurrentData;
+            if (measuredData == null)
                 return false;
 
-            data = Encoding.UTF8.GetBytes(msg);
+            data = Encoding.UTF8.GetBytes(measuredData.Serialize());
             if (data == null || data.Length == 0)
             {
                 return false;
             }
-            DateTime dt = DateTime.UtcNow;
             header = new MetadataHeader
             {
                 Length = (ulong)data.Length,
                 SequenceNumber = _sequence++,
-                Timestamp = dt
+                Timestamp = measuredData.Time
             };
             return true;
         }
