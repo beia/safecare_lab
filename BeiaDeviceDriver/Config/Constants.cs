@@ -23,5 +23,8 @@ namespace Safecare.BeiaDeviceDriver
         public static readonly Guid VideoStream1RefId = new Guid("59630068-73cf-45bd-ae47-d443212d994f");
         public static readonly Guid AudioStream1RefId = new Guid("555c4eee-26f0-427f-8a67-927066fd5612");
         public static readonly Guid SpeakerStream1RefId = new Guid("14E3C441-726B-41F7-B375-20DEA46EB744");
+
+        public static readonly Guid MqttTopicRefId = new Guid("EBFD59E5-E4AA-4C80-B274-2FFAF8E38AF3");
+        public static readonly string MqttTopic = nameof(MqttTopic);
     }
 }

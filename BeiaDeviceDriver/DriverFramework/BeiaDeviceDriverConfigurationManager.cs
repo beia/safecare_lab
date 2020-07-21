@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using VideoOS.Platform.DriverFramework.Definitions;
@@ -52,17 +53,25 @@ namespace Safecare.BeiaDeviceDriver
 
         protected override IDictionary<string, string> BuildHardwareSettings()
         {
-            return new Dictionary<string, string>()
+            return new Dictionary<string, string>
             {
-                // TODO: Add settings supported by the hardware
+                { Constants.MqttTopic, "odsi/mari-anais" }
             };
         }
 
         protected override ICollection<ISetupField> BuildFields()
         {
-            var fields = new List<ISetupField>();
-
-            // TODO: Add definition of setup fields supported by hardware and devices
+            var fields = new List<ISetupField>
+            {
+                new StringSetupField
+                {
+                    Key = Constants.MqttTopic,
+                    DisplayName = "MQTT topic",
+                    DisplayNameReferenceId = Guid.Empty,
+                    IsReadOnly = false,
+                    ReferenceId = Constants.MqttTopicRefId
+                }
+            };
 
             return fields;
         }

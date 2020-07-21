@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
@@ -76,11 +77,24 @@ namespace Safecare.BeiaDeviceDriver
             _client.MqttMsgPublishReceived -= MsgReceived;
             _client.MqttMsgPublishReceived += MsgReceived;
 
-            _client.Subscribe(new[] {"odsi/mari-anais"}, new[] {MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE});
+
+            var topic = FindMqttTopic(hardwareSettings);
+            if (topic != null)
+            {
+                _client.Subscribe(new[] {topic}, new[] {MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE});
+                LogUtils.LogDebug("Topic set: " + topic);
+            }
+            else
+                LogUtils.LogError("MQTT topic not set", "BeiaDeviceDriverConnectionManager");
 
             // polling for events from the device. Might not be needed if the event mechanism of your hardware is not poll based
             _inputPoller = new InputPoller(Container.EventManager, this, _messageHandler);
             _inputPoller.Start();
+        }
+
+        public string FindMqttTopic(ICollection<HardwareSetting> settings)
+        {
+            return settings.FirstOrDefault(s => s.Key == Constants.MqttTopic)?.Value;
         }
 
         public void MsgReceived(object sender, MqttMsgPublishEventArgs e)
