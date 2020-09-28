@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using VideoOS.Platform.DriverFramework.Definitions;
 using VideoOS.Platform.DriverFramework.Managers;
 using VideoOS.Platform.DriverFramework.Utilities;
 
@@ -10,6 +11,7 @@ namespace Safecare.BeiaDeviceDriver
     /// </summary>
     internal class InputPoller
     {
+        private IEventManager _eventManager;
         private bool _shuttingDown;
         private Lazy<Thread> _listenerThread;
         private byte[] _lastFrame;
@@ -42,6 +44,7 @@ namespace Safecare.BeiaDeviceDriver
             DeviceMessageHandler messageHandler)
         {
             _messageHandler = messageHandler;
+            _eventManager = eventManager;
         }
 
         public void Start()
@@ -73,6 +76,11 @@ namespace Safecare.BeiaDeviceDriver
                     {
                         string msg = _messageHandler.Data.Serialize();
                         PushFrame(BitmapUtils.BitmapToJpegBytes(BitmapUtils.ConvertTextToImage(msg)));
+
+                        // Send an XProtect event
+                        _eventManager.NewEvent(Constants.DriverId.ToString(), EventId.OutputChanged,
+                            new System.Collections.Generic.Dictionary<string, string> {{ "Thermometer", msg}});
+
                         _lastUpdateTime = _messageHandler.Data.Time;
                     }
 
