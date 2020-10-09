@@ -79,7 +79,7 @@ namespace Safecare.BeiaDeviceDriver_Fire
 
                         // Send an XProtect event
                         _eventManager.NewEvent(Constants.DriverId.ToString(), EventId.OutputChanged,
-                            new System.Collections.Generic.Dictionary<string, string> { { "Thermometer", msg } });
+                            new System.Collections.Generic.Dictionary<string, string> { { "Fire Detection", msg } });
 
                         _lastUpdateTime = _messageHandler.Data.Time;
                     }
