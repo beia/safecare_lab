@@ -79,7 +79,7 @@ namespace Safecare.BeiaDeviceDriver_Flood
 
                         // Send an XProtect event
                         _eventManager.NewEvent(Constants.DriverId.ToString(), EventId.OutputChanged,
-                            new System.Collections.Generic.Dictionary<string, string> { { "Thermometer", msg } });
+                            new System.Collections.Generic.Dictionary<string, string> { { "Flood", msg } });
 
                         _lastUpdateTime = _messageHandler.Data.Time;
                     }
