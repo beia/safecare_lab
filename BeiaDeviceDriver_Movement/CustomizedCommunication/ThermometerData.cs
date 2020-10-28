@@ -8,8 +8,8 @@ namespace Safecare.BeiaDeviceDriver_Movement
         [JsonProperty("Utc_date_time")]
         public DateTime Time { get; set; }
 
-        [JsonProperty("Temperature_in_degrees")]
-        public double TemperatureInDegrees { get; set; }
+        [JsonProperty("Movement")]
+        public double Miscare { get; set; }
         
 
         public string Serialize()
